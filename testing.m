@@ -1,5 +1,8 @@
 %% Initialization
 
+% Set seed
+rng(17)
+
 % Define size of the problem
 % n is dimension of each matrix, m is the number of matrices.
 n = 100;
@@ -36,7 +39,21 @@ x_baseline = qp_baseline_cvx(A, b);
 
 t0 = toc;
 
-%% Method 1: Prox-descent method
+
+%% Method 1: Subgradient method
+
+tic
+
+x0 = rand(n, 1);
+eps = 1e-10;
+max_iter = 100;
+
+[x_subgradient, iter_subgradient, x_list_subgradient, opt_list_subgradient] ...
+    = qp_subgradient_descent(A, b, x0, eps, max_iter);
+
+t1 = toc;
+
+%% Method 2: Prox-descent method
 
 tic
 
@@ -58,9 +75,9 @@ lambda = 2 * K_norm;
 [x_prox_descent, iter_prox_descent, x_list_prox_descent, opt_list_prox_descent] ...
     = qp_prox_descent(A, b, x0, lambda, eps, max_iter);
 
-t1 = toc;
+t2 = toc;
 
-%% Method 2: Proximal Bundle Method
+%% Method 3: Proximal Bundle Method
 
 tic
 
@@ -77,9 +94,9 @@ beta = 0.5;
     = qp_proximal_bundle(A, b, x0, lambda, beta, eps, max_iter);
 
 
-t2 = toc;
+t3 = toc;
 
-%% Method 3: BFGS Method
+%% Method 4: BFGS Method
 
 tic
 
@@ -98,13 +115,13 @@ x_list_bfgs(:, end)
 qp_function_eval(A, b, x_list_bfgs(:, end))
 
 
-t3 = toc;
+t4 = toc;
 
 %% Plotting
 
 opt_val = 0;
 
-%plot(1:size(opt_list_prox_descent), log(opt_list_prox_descent(1:end) - opt_val))
+%plot(11:size(opt_list_subgradient), log(opt_list_subgradient(11:end) - opt_val))
 %plot(11:size(opt_list_prox_descent), log(opt_list_prox_descent(11:end) - opt_val))
-%plot(11:(size(opt_list_bundle)-1), log(opt_list_bundle(12:end) - opt_val))
-plot(11:(size(opt_list_bfgs)), log(opt_list_bfgs(11:end) - opt_val))
+plot(11:(size(opt_list_bundle)), log(opt_list_bundle(11:end) - opt_val))
+%plot(11:(size(opt_list_bfgs)), log(opt_list_bfgs(11:end) - opt_val))
